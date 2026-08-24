@@ -10,8 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import rpg.core.command.TabCompletions;
+import rpg.core.config.ConfigManager;
 import rpg.core.message.MessageManager;
 import rpg.extra.chat.ChatBroadcast;
+import rpg.extra.chat.NotificationSoundPlayer;
 import rpg.extra.chat.PlayerNameHover;
 import rpg.extra.chat.model.ChatBadge;
 import rpg.extra.chat.service.ChatMuteService;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * {@code /ol party create|invite|accept|decline|leave|kick|disband|transfer|list|chat} (SOW PartyModule).
@@ -36,10 +39,15 @@ public final class PartyCommand implements CommandExecutor, TabCompleter {
     private final PartyService partyService;
     private final MessageManager messages;
     private final ChatMuteService muteService;
+    private final ConfigManager configManager;
+    private final Logger logger;
 
-    public PartyCommand(PartyService partyService, MessageManager messages, ChatMuteService muteService) {
+    public PartyCommand(PartyService partyService, MessageManager messages, ChatMuteService muteService,
+                         ConfigManager configManager, Logger logger) {
         this.partyService = partyService;
         this.messages = messages;
+        this.configManager = configManager;
+        this.logger = logger;
         this.muteService = muteService;
     }
 
@@ -173,6 +181,13 @@ public final class PartyCommand implements CommandExecutor, TabCompleter {
     /** Sends the invite text plus clickable 承認/拒否 buttons (SOW: party invite click-to-respond). */
     private void sendInviteNotification(Player invitee, Player inviter) {
         messages.send(invitee, "party.invite-received", "player", inviter.getName());
+        if (!muteService.isMuted(invitee.getUniqueId(), ChatBadge.PARTY)) {
+            var config = configManager.get("config.yml").get();
+            NotificationSoundPlayer.play(invitee, config.getBoolean("party.notify-sound.enabled", true),
+                    config.getString("party.notify-sound.name", "ENTITY_EXPERIENCE_ORB_PICKUP"),
+                    config.getDouble("party.notify-sound.volume", 1.0),
+                    config.getDouble("party.notify-sound.pitch", 1.0), logger);
+        }
         Component accept = ColorUtil.component(messages.format("party.invite-accept-button"))
                 .clickEvent(ClickEvent.runCommand("/ol party accept"))
                 .hoverEvent(HoverEvent.showText(ColorUtil.component(messages.format("party.invite-accept-hover"))));

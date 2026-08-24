@@ -54,7 +54,8 @@ public final class TradeModule implements ExtraModule {
         this.tradeService = new TradeService(manager, economy, plugin.getSchedulerService(), tradeConfig,
                 plugin.getMessageManager(), logRepository);
         plugin.getServer().getPluginManager().registerEvents(new TradeQuitListener(tradeService, plugin.getMessageManager()), plugin);
-        TradeCommand tradeCommand = new TradeCommand(tradeService, plugin.getMessageManager());
+        TradeCommand tradeCommand = new TradeCommand(tradeService, plugin.getMessageManager(), tradeConfig, plugin.getLogger(),
+                plugin.getChatMuteService());
         String description = "他プレイヤーとアイテムを取引します。";
         String usage = "trade <player>|accept|add|remove <index>|money <amount>|confirm|cancel|view";
         plugin.getPlayerCommandRegistry().register("trade", tradeCommand, description, usage);

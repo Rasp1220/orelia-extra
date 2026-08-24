@@ -7,10 +7,25 @@
 # config-version tracks this file's schema. Bump it whenever a new top-level section is
 # added - on next startup, ConfigManager appends the new section (with its comments) to any
 # existing config.yml that's missing it, without touching anything you've already customized.
-config-version: 5
+config-version: 6
 
 party:
   max-size: 6
+  # Plays a sound for the invitee alongside "party.invite-received", same fail-open
+  # Sound.valueOf pattern as mail's notify-sound below.
+  notify-sound:
+    enabled: true
+    name: ENTITY_EXPERIENCE_ORB_PICKUP
+    volume: 1.0
+    pitch: 1.0
+
+guild:
+  # Plays a sound for the invitee alongside "guild.invite-received".
+  notify-sound:
+    enabled: true
+    name: ENTITY_EXPERIENCE_ORB_PICKUP
+    volume: 1.0
+    pitch: 1.0
 
 friend:
   max-friends: 50
@@ -49,3 +64,9 @@ trade:
   session-timeout-seconds: 300
   # Max items either side can have in their offer at once.
   max-items-per-offer: 9
+  # Plays a sound for the target alongside "trade.request-received".
+  notify-sound:
+    enabled: true
+    name: ENTITY_EXPERIENCE_ORB_PICKUP
+    volume: 1.0
+    pitch: 1.0
