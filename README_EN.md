@@ -1,40 +1,9 @@
 <img src="https://orelia-mc.github.io/assets/logo_wide.jpg" />
 <h1 align="center">Orelia Extra</h1>
-<p align="center">MMORPG Feature Plugin of Orelia-MC</p>
+<p align="center">MMORPG Feature Plugin of Orelia-MC (archived)</p>
 
-## About
+## Archived
 
-`orelia-extra` is the later MMORPG-feature plugin (Paper 1.21.x / Java 21) of the Minecraft RPG plugin suite **Orelia** — Party, Friend, Guild, Chat, Trade, Mail, Auction, Housing, Pet, Mount, Ranking, Achievement.
+`orelia-extra` has been merged into [orelia-core](https://github.com/orelia-mc/orelia-core). Every feature this repo used to provide - Party, Friend, Guild, Chat, Trade, Mail, Auction, Housing, Pet, Mount, Ranking, Achievement - now ships as part of the single orelia-core plugin.
 
-Orelia is split into 3 plugins:
-
-- [orelia-core](https://github.com/orelia-mc/orelia-core) — combat/player/status foundation (required dependency)
-- [orelia-world](https://github.com/orelia-mc/orelia-world) — quest/NPC/story content layer (soft dependency)
-- **orelia-extra** (this repo) — later MMORPG features
-
-All 12 modules are implemented, each as an `ExtraModule` registered in `OreliaExtraPlugin#onEnable`, talking to orelia-core/orelia-world only through their published `rpg.api`/`rpg.world.api` interfaces (never gameplay-module internals):
-
-- **Party** (`/ol party`) — in-memory party grouping (create/invite/accept/decline/leave/kick/disband/transfer/chat; the leader can't leave, only disband or transfer). Receiving an invite shows clickable "Accept"/"Decline" chat text so it can be answered with a single click (also plays a notify sound per `config.yml`'s `party.notify-sound`, skipped while the recipient has the PARTY category muted). Joins/leaves/kicks/disbands are announced to every member, and a disconnecting leader auto-leaves (disbanding a solo party, or auto-transferring leadership when others remain)
-- **Friend** (`/ol friend`) — DB-persisted mutual friend list (add/accept/decline/remove/list; invites are clickable accept/decline). `/ol friend list` shows online friends with "Message" (pre-fills `/ol msg`) and "Request Teleport" buttons. Teleports are friends-only and consent-based (request, then a click to accept)
-- **Guild** (`/ol guild`) — DB-persisted guilds with leader/officer/member roles (list/transfer/chat). Invites are clickable and run `/guild accept` (also plays a notify sound per `config.yml`'s `guild.notify-sound`, skipped while GUILD is muted); joins/leaves/kicks/disbands are announced to every member. `/ol guild gui` (or clicking a row in `/ol guild list`) opens a guild list -> member roster GUI (`GuildGuiScreen`)
-- **Chat** (`/ol chat`, also aliased to top-level `/chat`) — switch between four chat channels: public (default)/party/guild/admin. `/oladmin chat <message>`/`/ol party chat <message>`/`/ol guild chat <message>` send a one-off message without changing the sender's selected channel. `/ol msg <player> <message>` (also aliased to top-level `/msg`) sends a one-to-one private message without changing the selected channel
-- **Trade** (`/ol trade`) — two-player item trading with a confirm/confirm handshake. `/ol trade money <amount>` lets either side also offer Vault Economy money (rejected with `MONEY_UNSUPPORTED` if Vault isn't installed). A trade request auto-cancels after `config.yml`'s `trade.request-timeout-seconds` (default 30s, and plays a notify sound for the recipient per `trade.notify-sound`, skipped while SYSTEM is muted), an open session after `trade.session-timeout-seconds` (default 300s), and each side can offer at most `trade.max-items-per-offer` (default 9) items. A completed trade is logged to a `trade_log` table (both UUIDs, item summary, amounts) - the in-progress session itself is still in-memory only, not persisted
-- **Mail** (`/ol mail`) — DB-persisted mailbox with item attachments, GUI inbox. `/ol mail send <player> <subject...>` sends player-to-player mail (online-only, text-only), `/ol mail delete <index>` or a shift-click in the GUI removes an entry. The inbox pages past 54 entries (`GuiPaginator`) and a clickable join-time notice (opens `/ol mail`) fires when there's unread mail. Read mail with attachments already claimed (or none at all) auto-deletes after `config.yml`'s `mail.retention-days` (default 30)
-- **Auction** (`/ol auction`) — player-run auction house with timed listings, settles via Vault. A sale deducts `config.yml`'s `auction.fee-rate` (default 5%) as a fee before crediting the seller. Each seller can hold at most `auction.max-listings-per-seller` (default 10) listings at once, and the default listing duration is `auction.default-duration-hours` (default 72h). The browse GUI pages past 54 listings, and an expired (unsold) listing now mails the seller the same way a sale does
-- **Housing** (`/ol house`) — config-driven purchasable house plots with `/ol house home` teleport (`/ol house gui` opens a GUI to buy/go home too)
-- **Pet** (`/ol pet`) — config-driven follower pets (unlock/summon/dismiss; `/ol pet gui` opens a GUI to buy/summon too)
-- **Mount** (`/ol mount`) — config-driven rideable mounts (unlock/summon/dismiss)
-- **Ranking** (`/ol ranking`) — level leaderboard GUI, reads orelia-core's `StatusApi` directly
-- **Achievement** (`/ol achievement [page]` for the chat listing, `/ol achievement gui` for a GUI) — config-driven achievements (level/quest/money conditions), rewards via `SkillApi`. Each achievement can be grouped into a free-form genre via `achievements.yml`'s `category:`; the GUI is a 2-step drill-down (pick a category, then a paginated list of that category's achievements, 7 per page). Publishes `rpg.extra.api.AchievementApi` (`openGui(Player)`) via `ServicesManager` - orelia-world's player-info menu (nether star) "実績" icon opens the GUI directly through this API instead of relaying through a command.
-
-## Setup
-
-```bash
-./gradlew build
-```
-
-Requires network access to `repo.papermc.io` (Paper API) and `jitpack.io` (resolves orelia-core, orelia-world, and Vault API straight from GitHub).
-
-## Config/messages auto-migration and versioning
-
-`messages.yml`, `achievements.yml`, `housing.yml`, `mounts.yml`, `pets.yml`, and `config.yml` are all tracked by a top-of-file `config-version`; newly added keys (including ones nested inside a section you already have) are automatically spliced into an existing file at the correct position on next startup (via orelia-core's `ConfigMigrator`, shared over jitpack). Bump a file's `config-version` whenever you add a new top-level section or key. Every push to `main` (i.e. every merged PR) auto-bumps `build.gradle.kts`'s `version` by PATCH and tags the commit, via `.github/workflows/version-bump.yml`. Label a PR `bump:minor` for a breaking/compatibility change, or `bump:major` for a large rework, before merging.
+This repository is archived (read-only). All further development, issues, and PRs happen at [orelia-core](https://github.com/orelia-mc/orelia-core).
